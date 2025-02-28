@@ -1,0 +1,11 @@
+.letter{
+    background-color: aliceblue;
+}
+
+.letter.held{
+    background-color: lightcoral;
+}
+
+.letter.held.revealed{
+    background-color: lightgreen;
+}
