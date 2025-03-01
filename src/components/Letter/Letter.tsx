@@ -10,7 +10,7 @@ interface LetterProps extends LetterType {
 export const Letter = ({value, id, isHeld, isRevealed, isEnabled,  onClick} :LetterProps) => {
     return (
         <button className={`letter ${isHeld ? 'held' : ''} ${isRevealed ? 'revealed' : ''}`} onClick={isEnabled ? onClick : undefined} id={id} disabled={!isEnabled}>
-            {value}                        
+            {value.toUpperCase()}                        
         </button>
     )
 }

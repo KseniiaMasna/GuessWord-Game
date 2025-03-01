@@ -1,12 +1,19 @@
 import './App.css'
-import { useState, useEffect } from 'react'
+import clsx from 'clsx';
+import Confetti from 'react-confetti'
+import  {words}  from './assets/words'
+import {randomWord} from './utils'
+import { useState } from 'react'
 import { Header } from './components/Header/Header'
 import { Letter } from './components/Letter/Letter'
 import { SecretWord } from './components/SecretWord/SecretWord'
 import { LetterType } from './types/types'
 import { SecretLetter } from './types/types'
+import { GameStatus } from './components/GameStatus/GameStatus'
+import { languages } from './assets/languages'
 
-const myWord: string = 'secret'
+//Static value
+const myWord: string = randomWord(words)
 const alphabet: string[] = 'abcdefghijklmnopqrstuvwxyz'.split('')
 const letters: LetterType[] = alphabet.map(letter => {
   return {
@@ -26,21 +33,42 @@ const secretWord: SecretLetter[] = myWord.split('').map(letter => {
   }
 })
 
-const initialAttempts: number = 7
-
-
 
 
 function App() {
-  const [attempts, setAttempts] = useState<number>(initialAttempts)
+  // State values
+  const [attempts, setAttempts] = useState<number>(languages.length - 1)
   const [secretLetters, setSecretLetters] = useState(secretWord)
   const [keyBoard, setKeyBoard] = useState(letters)
 
+  // Derived values
   const gameOver = secretLetters.every(letter => letter.isRevealed) || attempts === 0
+  const gameWon = secretLetters.every(letter => letter.isRevealed) 
 
 
-  
+  const languageElements = languages.map((language, index) => {
+    const styles = {
+      backgroundColor: language.backgroundColor,
+      color: language.color
+    }
 
+    const lostLanguagesCount = languages.length - attempts
+    const isLost = index < lostLanguagesCount
+
+    const className = clsx({
+      chip: true,
+      lost: isLost
+    })
+
+    return (
+      <span 
+        className={className}
+        style={styles} 
+        key={language.name}>
+        {language.name}
+      </span>
+    )
+  })
   
   const keyboardElements = keyBoard.map(letter => <Letter
     value={letter.value}
@@ -82,7 +110,7 @@ function App() {
   }
 
   const startNewGame = () => {
-    setAttempts(initialAttempts)
+    setAttempts(languages.length - 1)
     setSecretLetters(secretWord)
     setKeyBoard(letters)
   }
@@ -90,17 +118,25 @@ function App() {
   return (
     <>
       <Header />
+      {
+        gameOver 
+        
+        ? <GameStatus status={attempts === 0 ? 'lose' : 'win'}/>
+        : <section className='game-status'></section>
+      }
+
       <main>
-        <SecretWord word={secretLetters}/>
-        <div className='keyboard'>
+        <section className="language-chips">
+          {languageElements}
+        </section>
+        <SecretWord 
+          word={secretLetters}
+          gameOver = {gameOver}/>
+        <section className='keyboard'>
               {keyboardElements}
-        </div>
-        {gameOver && 
-          <>
-            <h1>{attempts === 0 ? 'Game Over' : 'You Win'}</h1>    
-            <button onClick={startNewGame}>New Game</button>
-          </>    
-        }
+        </section>
+        {gameOver && <button className='new-game' onClick={startNewGame}>New Game</button>}
+        {gameWon && <Confetti className="w-screen h-screen"/>}
       </main>
     </>
   )

@@ -1,19 +1,34 @@
 import './SecretWord.css'
+import clsx from 'clsx'
 import { SecretLetter } from '../../types/types'
 
 interface SecretWordProps {
-    word: SecretLetter[];
+    word: SecretLetter[]
+    gameOver: boolean
 }
 
-export const SecretWord = ({ word }: SecretWordProps) => {
+export const SecretWord = ({ word, gameOver }: SecretWordProps) => {
 
     const hashedWord = word.map((letter, index) => {
-        return <span key={index}>{letter.isRevealed ? letter.id : '*'}</span>
+
+        let missedLetter: boolean = false
+        if (gameOver && !letter.isRevealed){
+            missedLetter = true
+        } 
+        const classSecretLetter = clsx({
+            missed: missedLetter
+        })
+
+        return (
+            <span className={classSecretLetter}
+                key={index}>
+                {letter.isRevealed || gameOver ? letter.id.toUpperCase() : ''}
+            </span>)
     })
     return (
-        <div className='secretWord'>
-            <h1>{hashedWord}</h1>
-        </div>
+        <section className='secret-word'>
+            {hashedWord}  
+        </section>
     )
 }
 

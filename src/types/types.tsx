@@ -8,3 +8,9 @@ export interface LetterType {
 export interface SecretLetter extends LetterType {
     isRevealed: boolean
 }
+
+export interface Language {
+    name: string;
+    backgroundColor: string;
+    color: string;
+}
